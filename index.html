@@ -30,13 +30,11 @@
         }
         /* デモ画像 */
         #demo-image {
-            /* 初期状態では非表示 */
+            /* 最初は非表示 */
             display: none;
             max-width: 80vw;
             max-height: 80vh;
             border-radius: 1rem;
-            /* 白い縁取りを削除 */
-            /* box-shadow: 0 0 50px rgba(255, 255, 255, 0.5); */
         }
         /* 開始ボタン */
         #start-button {
@@ -48,17 +46,16 @@
 
     <!-- デモのコンテンツを表示するコンテナ -->
     <div id="demo-container">
+        <!-- 開始ボタン -->
+        <button id="start-button" class="px-8 py-4 bg-red-600 text-white font-bold text-2xl rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+            基板修理
+        </button>
+
         <!-- アニメーションさせる画像 -->
         <img id="demo-image" src="https://raw.githubusercontent.com/keigox68000/nosnos/refs/heads/main/konosuke.png" alt="デモ画像">
         
         <!-- BGM用のAudio要素 -->
-        <!-- 注意: GitHubのページURLではなく、RAWコンテンツのURLを指定する必要があります -->
         <audio id="bgm" src="https://raw.githubusercontent.com/keigox68000/nosnos/main/nos.mp3" loop></audio>
-
-        <!-- デモ開始ボタン -->
-        <button id="start-button" class="px-8 py-4 bg-indigo-600 text-white font-bold text-2xl rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
-            デモを開始
-        </button>
     </div>
 
     <script>
@@ -66,7 +63,6 @@
         const image = document.getElementById('demo-image');
         const bgm = document.getElementById('bgm');
         const startButton = document.getElementById('start-button');
-        const demoContainer = document.getElementById('demo-container');
 
         // アニメーションの状態を管理する変数
         let angle = 0; // 回転角度
@@ -75,21 +71,12 @@
 
         /**
          * アニメーションのメインループ
-         * requestAnimationFrameを使用して、ブラウザの描画タイミングに合わせて滑らかにアニメーションさせます。
          */
         function animate() {
-            // 角度を高速で増加させる
             angle += 8; 
-
-            // スケールを sin 関数を使って 0.5 から 1.5 の間で滑らかに変化させる（脈動のような効果）
-            // Date.now() を使うことで、時間経過に基づいたアニメーションになる
             const scaleFactor = Date.now() * 0.015;
             scale = 1 + Math.sin(scaleFactor) * 0.5;
-
-            // 画像の transform プロパティを更新して、回転と拡大を適用
             image.style.transform = `rotate(${angle}deg) scale(${scale})`;
-
-            // 次のフレームで再度 animate 関数を呼び出す
             animationFrameId = requestAnimationFrame(animate);
         }
 
@@ -97,27 +84,25 @@
          * デモを開始する関数
          */
         function startDemo() {
+            // 開始ボタンを非表示にし、画像を表示する
+            startButton.style.display = 'none';
+            image.style.display = 'block';
+
             // BGMの音量を30%に設定
             bgm.volume = 0.3;
+            
             // BGMを再生
+            // ユーザーのクリックイベント内で呼び出されるため、再生は成功するはず
             bgm.play().catch(error => {
-                // 自動再生がブロックされた場合などのエラーをコンソールに表示
                 console.error("BGMの再生に失敗しました:", error);
-                // ユーザーに問題を知らせるための簡単なUIフィードバックを追加することもできます
-                demoContainer.innerHTML += '<p class="text-red-500 absolute bottom-5">BGMの再生に失敗しました。ブラウザの設定を確認してください。</p>';
             });
-
-            // 開始ボタンを非表示にする
-            startButton.style.display = 'none';
-            // 画像を表示する
-            image.style.display = 'block';
 
             // アニメーションを開始
             animate();
         }
 
-        // 開始ボタンがクリックされたら、デモを開始する
-        startButton.addEventListener('click', startDemo);
+        // 開始ボタンがクリックされたら、一度だけデモを開始する
+        startButton.addEventListener('click', startDemo, { once: true });
     </script>
 
 </body>
